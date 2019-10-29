@@ -1,0 +1,27 @@
+{
+  "name": "fiture-uccx-proxy",
+  "version": "1.0.0",
+  "description": "Fiture UCCX Proxy Server",
+  "main": "index.js",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "btoa": "^1.2.1",
+    "eslint": "^6.1.0",
+    "express": "^4.17.1",
+    "odbc": "^2.1.2",
+    "xml2js": "^0.4.22"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.6",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "babel-preset-es2015": "^6.24.1"
+  },
+  "scripts": {
+    "start": "babel-node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ericko Yap",
+  "license": "ISC"
+}
