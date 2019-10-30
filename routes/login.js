@@ -1,9 +1,9 @@
 const { executeHttp } = require('../services');
-const { server, http: httpTarget } = require('../env');
-const http = require('http');
+const { http: httpTarget } = require('../env');
 const btoa = require('btoa');
 
-const login = async (app) => {
+const login = async ({ app, http, logger }) => {
+
     app.post('/fiboard/login', (req, res) => {
         const { username, password } = req.body;
         const authorize = 'Basic ' + btoa(username + ':' + password);
@@ -18,7 +18,7 @@ const login = async (app) => {
             }
         };
 
-        executeHttp.httpRequest(http, options)
+        executeHttp.httpRequest({ http, logger }, options)
             .then((result) => {
                 // a hack for login problem
                 const { errorData, errorType } = result.apiErrors.apiError;

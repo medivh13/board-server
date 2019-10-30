@@ -1,4 +1,6 @@
 const createMiddleware = (args, func) => {
+    const { logger } = args;
+
     return async (req, res, next) => {
         if (args.http){
             args.http.options.headers['Authorization'] = req.header('Authorization');
@@ -10,8 +12,7 @@ const createMiddleware = (args, func) => {
             Object.assign(res.locals.data, middlewareRes);
         }
         catch(err){
-            console.log(err);
-            // throw err;
+            logger.error(err);
         }
 
         next();

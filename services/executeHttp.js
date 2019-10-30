@@ -1,6 +1,8 @@
 const { parseStringPromise } = require('xml2js');
 
-const httpRequest = async (http, options) => {
+const httpRequest = async (args, options) => {
+    const { http, logger } = args;
+
     return new Promise((resolve, reject) => {
         let body = [];
 
@@ -13,7 +15,7 @@ const httpRequest = async (http, options) => {
                 resolve(result);
             });
         }).on('error', (err) => {
-            console.log("Error: " + err);
+            logger.error(`[ERROR] ${err}`);
             reject({
                 Users: {
                     User: []
@@ -23,7 +25,7 @@ const httpRequest = async (http, options) => {
         });
         req.end();
     }).catch((err) => {
-        console.log(err.message);
+        logger.error(`[ERROR] ${err.message}`);
         return {
             Users: {
                 User: []
@@ -33,7 +35,9 @@ const httpRequest = async (http, options) => {
     });
 };
 
-const httpLogin = async (http, options) => {
+const httpLogin = async (args, options) => {
+    const { http, logger } = args;
+
     return new Promise((resolve, reject) => {
         let body = [];
 
@@ -46,7 +50,7 @@ const httpLogin = async (http, options) => {
                 resolve(result);
             });
         }).on('error', (err) => {
-            console.log("Error: " + err);
+            logger.error(`[ERROR] ${err}`);
             if (err.message){
                 parseStringPromise(err.message, { explicitArray: false }).then((res) => {
                     reject(res);
@@ -55,7 +59,7 @@ const httpLogin = async (http, options) => {
         });
         req.end();
     }).catch((err) => {
-        console.log(err.message);
+        logger.error(`[ERROR] ${err.message}`);
         return {
             Users: {
                 User: []

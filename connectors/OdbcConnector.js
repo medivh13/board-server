@@ -8,8 +8,9 @@ const {
 } = require('../env');
 
 class OdbcConnector {
-    constructor(){
-        console.log("Initiating ODBC Connection... ");
+    constructor(opts){
+        Object.assign(this, opts);
+        this.logger.info("[INFO] Initiating ODBC Connection... ");
     }
 
     async connectToDatabase() {
@@ -23,7 +24,7 @@ class OdbcConnector {
 		try {
 			const res = await odbc.connect(connectionConfig);
 			if (res){
-				console.log("Successfully connected to ODBC server.");
+				this.logger.info("[INFO] Successfully connected to ODBC server.");
 			}
 			return res;
 		}

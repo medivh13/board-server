@@ -6,9 +6,9 @@ const { server, http: httpTarget } = require('../env');
 const routes = require('../routes');
 const middlewares = require('../middlewares');
 
-class ProxyConnector {
+class HttpConnector {
     constructor(opts){
-        this.odbc = opts.odbc;
+        Object.assign(this, opts);
     }
 
     async start(){
@@ -21,12 +21,13 @@ class ProxyConnector {
         await this._setRoutes(app);
 
         app.listen(server.port);
-        console.log("Successfully started proxy server.");
+        this.logger.info("[INFO] Successfully started proxy server.");
     }
 
     async _setMiddlewares(app){
         const args = {
             odbc: this.odbc,
+            logger: this.logger,
             http: {
                 instance: http,
                 options: {
@@ -70,7 +71,7 @@ class ProxyConnector {
 
     async _setProxyGet(app){
         app.get('*', (client_req, client_res) => {
-            console.log('serve: ' + client_req.url);
+            this.logger.info('serve: ' + client_req.url);
             const authorize = client_req.header('Authorization');
 
             const options = {
@@ -103,7 +104,7 @@ class ProxyConnector {
                 });
             })
             .on('error', (err) => {
-                console.log("Error: " + err);
+                this.logger.error(`[ERROR] ${err}`);
                 client_res.send({
                     response: {},
                     data: client_res.locals.data,
@@ -118,10 +119,16 @@ class ProxyConnector {
     }
 
     async _setRoutes(app){
+        const args = {
+            app,
+            http,
+            logger: this.logger
+        };
+
         for(let key in routes){
-            routes[key](app);
+            routes[key](args);
         }
     }
 }
 
-module.exports = ProxyConnector;
+module.exports = HttpConnector;

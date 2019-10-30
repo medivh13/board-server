@@ -1,15 +1,15 @@
 const { queryResult } = require('../services/executeDbQuery');
 const { httpRequest } = require('../services/executeHttp');
 
-const getAnswered = async ({ odbc }) => {
+const getAnswered = async (args) => {
     const query = 'SELECT COUNT(*) AS answered FROM ContactCallDetail WHERE contactDisposition = 2'; // HANDLED
-    const res = await queryResult(odbc, query);
+    const res = await queryResult(args, query);
     return { answered: res[0].answered };
 };
 
-const getAbandoned = async ({ odbc }) => {
+const getAbandoned = async (args) => {
     const query = 'SELECT COUNT(*) AS abandoned FROM ContactCallDetail WHERE contactDisposition != 2'; // ABANDONED
-    const res = await queryResult(odbc, query);
+    const res = await queryResult(args, query);
     return { abandoned: res[0].abandoned };
 };
 
@@ -25,10 +25,11 @@ const getNotReady = (User) => {
     return User.filter(u => (u.state !== 'TALKING' && u.state !== 'READY')).length;
 };
 
-const getAgentStates = async ({ http }) => {
+const getAgentStates = async (args) => {
+    const { http, logger } = args;
     http.options.method = 'GET';
     http.options.path = '/finesse/api/Users';
-    const res = await httpRequest(http.instance, http.options);
+    const res = await httpRequest({ http: http.instance, logger }, http.options);
     const { Users: { User }} = res;
 
     return {
@@ -50,15 +51,15 @@ const getServiceLevel = (abandonRate) => {
     return { serviceLevel };
 };
 
-const getTotalCalls = async ({ odbc }) => {
+const getTotalCalls = async (args) => {
     const query = 'SELECT COUNT(*) AS totalcalls FROM ContactCallDetail';
-    const res = await queryResult(odbc, query);
+    const res = await queryResult(args, query);
     return { totalCalls: res[0].totalcalls };
 };
 
-const getServiceLevelData = async ({ odbc }) => {
-    const { abandoned } = await getAbandoned({ odbc });
-    const { totalCalls } = await getTotalCalls({ odbc });
+const getServiceLevelData = async (args) => {
+    const { abandoned } = await getAbandoned(args);
+    const { totalCalls } = await getTotalCalls(args);
     const { abandonRate } = getAbandonRate(abandoned, totalCalls);
     const { serviceLevel } = getServiceLevel(abandonRate);
 
@@ -70,9 +71,9 @@ const getServiceLevelData = async ({ odbc }) => {
     }
 };
 
-const getAvgInbound = async ({ odbc }) => {
+const getAvgInbound = async (args) => {
     const query = 'SELECT AVG(connecttime) AS avginbound FROM ContactCallDetail WHERE contactType = 1'; // INCOMING / INBOUND
-    const res = await queryResult(odbc, query);
+    const res = await queryResult(args, query);
     const secs = parseInt(res[0].avginbound);
     const averageInboundArr = [
         ("0" + Math.round(secs / 3600)).slice(-2),
@@ -83,9 +84,9 @@ const getAvgInbound = async ({ odbc }) => {
     return { averageInbound };
 };
 
-const getAvgOutbound = async ({ odbc }) => {
+const getAvgOutbound = async (args) => {
     const query = 'SELECT AVG(connecttime) AS avgoutbound FROM ContactCallDetail WHERE contactType = 2'; // OUTGOING / OUTBOUND
-    const res = await queryResult(odbc, query);
+    const res = await queryResult(args, query);
     const secs = parseInt(res[0].avgoutbound);
     const averageOutboundArr = [
         ("0" + Math.round(secs / 3600)).slice(-2),
@@ -96,9 +97,9 @@ const getAvgOutbound = async ({ odbc }) => {
     return { averageOutbound };
 };
 
-const getCallQueue = async ({ odbc }) => {
+const getCallQueue = async (args) => {
     const query = 'SELECT callswaiting FROM RtICDStatistics';
-    const res = await queryResult(odbc, query);
+    const res = await queryResult(args, query);
     const callQueue = res[0].callswaiting;
     return { callQueue };
 };

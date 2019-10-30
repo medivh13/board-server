@@ -1,4 +1,7 @@
 module.exports = {
+  data: {
+    appName: 'fiboard-server'
+  },
   server: {
     port: 3001
   },

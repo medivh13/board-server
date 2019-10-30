@@ -6,18 +6,20 @@ const testData = async ({ odbc }, query) => {
 };
 
 const testDbQueryMiddleware = (app, args) => {
+    const { logger } = args;
+
     app.use(async (req, res, next) => {
         try {
             const { query } = req.headers;
-            console.log(`Running: "${query}"`);
+            logger.info(`Running: "${query}"`);
             const dbRes = await testData(args, query);
-            console.log('--- DB RES --- LENGTH: ' + dbRes.length);
-            console.log(dbRes);
+            logger.info('--- DB RES --- LENGTH: ' + dbRes.length);
+            logger.info(dbRes);
             res.locals.data = res.locals.data || {};
             Object.assign(res.locals.data, { dbRes });
         }
         catch(err){
-            console.log(err);
+            logger.error(err);
             throw err;
         }
 

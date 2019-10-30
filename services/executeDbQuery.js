@@ -1,8 +1,10 @@
-const queryResult = async (odbc, query) => {
+const queryResult = async (args, query) => {
+    const { odbc, logger } = args;
+
     return new Promise((resolve,reject) => {
         odbc.query(query, (error, result) => {
             if (error) {
-                console.error(error);
+                logger.error(`[ERROR] ${error}`);
                 reject(error);
             }
             else {
@@ -10,7 +12,7 @@ const queryResult = async (odbc, query) => {
             }
         });
     }).catch((err) => {
-        console.log(err.message);
+        logger.error(`[ERROR] ${err.message}`);
     });
 };
 

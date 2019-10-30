@@ -6,6 +6,7 @@
   "dependencies": {
     "bcrypt": "^3.0.6",
     "btoa": "^1.2.1",
+    "bunyan": "^1.8.12",
     "eslint": "^6.1.0",
     "express": "^4.17.1",
     "odbc": "^2.1.2",

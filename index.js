@@ -1,20 +1,28 @@
+const env = require('./env');
 const HttpConnector = require('./connectors/HttpConnector');
 const OdbcConnector = require('./connectors/OdbcConnector');
 
-const odbcConnector = new OdbcConnector();
+const createLogger = require('./utils/createLogger');
+const logger = createLogger(env.data.appName);
+
+const opts = {
+    config: env,
+    logger
+};
+
+const odbcConnector = new OdbcConnector(opts);
 
 const startServer = async () => {
     let odbc;
-    let opts;
 
     try {
         odbc = await odbcConnector.connectToDatabase();
     }
     catch (err){
-        console.log("Failed to connect to ODBC, starting offline mode...");
+        logger.error("Failed to connect to ODBC, starting offline mode...");
     }
 
-    opts = { odbc };
+    Object.assign(opts, { odbc });
     const httpConnector = new HttpConnector(opts);
 
     try {
@@ -29,21 +37,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// startServer().then((res) => {
-// 	try {
-// 		res.odbc.query('SELECT * FROM AgentConnectionDetail', (error, result) => {
-// 			if (error) {
-// 				console.error(error)
-// 			}
-// 			else {
-// 				console.log(result);
-// 			}
-// 		});
-// 	}
-// 	catch(err){
-// 		console.log(err.message);
-// 	}
-// });
-
-
