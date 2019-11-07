@@ -1,17 +1,20 @@
+require('dotenv').config();
+const env = process.env;
+
 module.exports = {
   data: {
-    appName: 'fiboard-server'
+    appName: env.APP_NAME
   },
   server: {
-    port: 3001
+    port: env.APP_PORT
   },
   http: {
-    hostname: 'cucx01.altros.co.id',
-    port: '8082'  // set 8445 as https port
+    hostname: env.SERVER_HOSTNAME,
+    port: env.SERVER_PORT  // set 8445 as https port
   },
   odbcConfig: {
-    dsn: 'Fiture_UCCX_32_2',
-    odbcConnectionTimeout: 15,
-    loginTimeout: 15
+    dsn: env.ODBC_DSN,
+    odbcConnectionTimeout: env.ODBC_CONNECTION_TIMEOUT,
+    loginTimeout: env.ODBC_LOGIN_TIMEOUT
   }
 };
