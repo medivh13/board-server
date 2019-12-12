@@ -30,7 +30,7 @@ const getAgentStates = async (args) => {
     http.options.method = 'GET';
     http.options.path = '/finesse/api/Users';
     const res = await httpRequest({ http: http.instance, logger }, http.options);
-    const { Users: { User }} = res;
+    const { User } = res.Users || { User: [] };
 
     return {
         talking: getTalking(User),
@@ -74,7 +74,7 @@ const getServiceLevelData = async (args) => {
 const getAvgInbound = async (args) => {
     const query = 'SELECT AVG(connecttime) AS avginbound FROM ContactCallDetail WHERE contactType = 1'; // INCOMING / INBOUND
     const res = await queryResult(args, query);
-    const secs = parseInt(res[0].avginbound);
+    const secs = parseInt(res[0].avginbound || 0);
     const averageInboundArr = [
         ("0" + Math.round(secs / 3600)).slice(-2),
         ("0" + Math.round(secs / 60)).slice(-2),
@@ -87,7 +87,7 @@ const getAvgInbound = async (args) => {
 const getAvgOutbound = async (args) => {
     const query = 'SELECT AVG(connecttime) AS avgoutbound FROM ContactCallDetail WHERE contactType = 2'; // OUTGOING / OUTBOUND
     const res = await queryResult(args, query);
-    const secs = parseInt(res[0].avgoutbound);
+    const secs = parseInt(res[0].avgoutbound || 0);
     const averageOutboundArr = [
         ("0" + Math.round(secs / 3600)).slice(-2),
         ("0" + Math.round(secs / 60)).slice(-2),
@@ -100,7 +100,7 @@ const getAvgOutbound = async (args) => {
 const getCallQueue = async (args) => {
     const query = 'SELECT callswaiting FROM RtICDStatistics';
     const res = await queryResult(args, query);
-    const callQueue = res[0].callswaiting;
+    const callQueue = res[0] ? res[0].callswaiting || 0 : 0;
     return { callQueue };
 };
 

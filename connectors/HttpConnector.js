@@ -40,9 +40,21 @@ class HttpConnector {
             }
         };
 
-        middlewares.forEach((func) => {
-            app.use(createMiddleware(args, func));
-        });
+        const createJoinMiddlewares = async (args) => {
+            const middlewareList = middlewares.map((func) => {
+                return createMiddleware(args, func);
+            });
+
+            return async (req, res, next) => {
+                const middlewares = await middlewareList.map((middleware) => {
+                    return middleware(req, res);
+                });
+                await Promise.all(middlewares);
+                next();
+            };
+        };
+
+        app.use(await createJoinMiddlewares(args));
 
         // for testing db query only
         // require('../middlewares/testDbQueryMiddleware')(app, args);
