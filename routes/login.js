@@ -26,8 +26,7 @@ const login = async ({ app, http, logger }) => {
                     //TODO add JWT Token
                     response = {
                         code: 'success',
-                        message: 'Login successful.',
-                        authToken: '12345678'
+                        message: 'Login successful.'
                     };
                 }
                 else {

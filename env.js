@@ -8,6 +8,9 @@ module.exports = {
   server: {
     port: env.APP_PORT
   },
+  client: {
+    accessControlAllowOrigin: env.ACCESS_CONTROL_ALLOW_ORIGIN
+  },
   http: {
     hostname: env.SERVER_HOSTNAME,
     port: env.SERVER_PORT  // set 8445 as https port

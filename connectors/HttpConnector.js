@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const { parseStringPromise } = require('xml2js');
 const createMiddleware = require('../middlewares/createMiddleware');
-const { server, http: httpTarget } = require('../env');
+const { server, http: httpTarget, client } = require('../env');
 const routes = require('../routes');
 const middlewares = require('../middlewares');
 
@@ -64,7 +64,7 @@ class HttpConnector {
         app.use((req, res, next) => {
 
             // Website you wish to allow to connect
-            res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+            res.setHeader('Access-Control-Allow-Origin', client.accessControlAllowOrigin);
 
             // Request methods you wish to allow
             res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
