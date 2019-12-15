@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const { parseStringPromise } = require('xml2js');
 const createMiddleware = require('../middlewares/createMiddleware');
 const { server, http: httpTarget, client } = require('../env');
 const routes = require('../routes');
@@ -17,7 +16,6 @@ class HttpConnector {
 
         await this._setMiddlewares(app);
         await this._setHeaders(app);
-        await this._setProxyGet(app);
         await this._setRoutes(app);
 
         app.listen(server.port);
@@ -78,55 +76,6 @@ class HttpConnector {
 
             // Pass to next layer of middleware
             next();
-        });
-    }
-
-    async _setProxyGet(app){
-        app.get('*', (client_req, client_res) => {
-            this.logger.info('serve: ' + client_req.url);
-            const authorize = client_req.header('Authorization');
-
-            const options = {
-                hostname: httpTarget.hostname,
-                port: httpTarget.port,
-                method: 'GET',
-                path: client_req.url,
-                headers: {
-                    'Authorization': authorize,
-                    'Content-Type': 'text/plain'
-                }
-            };
-
-            const proxy = http.request(options, (res) => {
-                let result = {
-                    response: {},
-                    data: client_res.locals.data
-                };
-                let body = [];
-
-                res.on('data',(data) => {
-                    body.push(data);
-                }).on('end', async () => {
-                    const response = Buffer.concat(body).toString();
-                    result.response = await parseStringPromise(response, { explicitArray: false });
-                    client_res.send(result);
-                    res.pipe(client_res, {
-                        end: true
-                    });
-                });
-            })
-            .on('error', (err) => {
-                this.logger.error(`[ERROR] ${err}`);
-                client_res.send({
-                    response: {},
-                    data: client_res.locals.data,
-                    message: "Failed to fetch response from server."
-                });
-            });
-
-            client_req.pipe(proxy, {
-                end: true
-            });
         });
     }
 
