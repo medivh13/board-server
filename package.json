@@ -4,7 +4,7 @@
   "description": "Fiture UCCX Proxy Server",
   "main": "index.js",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "btoa": "^1.2.1",
     "bunyan": "^1.8.12",
     "dotenv": "^8.2.0",
